@@ -1,0 +1,19 @@
+<!doctype html>
+{% load static %}
+<html lang="en" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <title>SkySender</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'css/bootstrap-icons.min.css' %}" -->
+    <link href="{% static 'css/mailings.css' %}" rel="stylesheet">
+</head>
+<body>
+{% include "mailings/includes/header.html" %}
+{% block content %}{% endblock %}
+
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
