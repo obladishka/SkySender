@@ -103,7 +103,7 @@ EMAIL_PORT = os.getenv("EMAIL_PORT")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False) == "True"
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_SSL", False) == "True"
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", False) == "True"
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 SERVER_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
@@ -112,7 +112,6 @@ EMAIL_ADMIN = EMAIL_HOST_USER
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "mailings:main"
 LOGOUT_REDIRECT_URL = "mailings:main"
-LOGIN_URL = "users:login"
 
 CACHE_ENABLED = os.getenv("CACHE_ENABLED", False) == "True"
 if CACHE_ENABLED:

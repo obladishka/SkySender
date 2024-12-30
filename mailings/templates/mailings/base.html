@@ -7,11 +7,12 @@
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <!-- <link href="{% static 'css/bootstrap-icons.min.css' %}" -->
     <link href="{% static 'css/mailings.css' %}" rel="stylesheet">
 </head>
 <body>
-{% include "mailings/includes/header.html" %}
+{% if not request.resolver_match.view_name == 'users:register' and not request.resolver_match.view_name == 'users:login' %}
+    {% include "mailings/includes/header.html" %}
+{% endif %}
 {% if user.is_authenticated %}
     {% if perms.mailings.can_disable_mailing %}
         {% include "mailings/includes/manager_menu.html" %}

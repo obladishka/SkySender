@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 
 from users.models import User
@@ -37,7 +36,7 @@ class UserAuthenticationForm(AuthenticationForm):
 
     class Meta:
         model = User
-        fields = ("email", "password", "remember_me")
+        fields = ("email", "password")
 
     def __init__(self, *args, **kwargs):
         """Метод для стилизации формы."""
