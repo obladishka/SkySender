@@ -5,7 +5,7 @@ from users.models import User
 
 
 class Recipient(models.Model):
-    """Модель получателей рассылки"""
+    """Модель получателей рассылки."""
 
     email = models.EmailField(unique=True, verbose_name="email", help_text="Введите email клиента")
     name = models.CharField(
@@ -30,7 +30,7 @@ class Recipient(models.Model):
 
 
 class Message(models.Model):
-    """Модель сообщений"""
+    """Модель сообщений."""
 
     subject = models.CharField(max_length=150, verbose_name="тема письма", help_text="Введите тему письма")
     message = models.TextField(verbose_name="текст письма", help_text="Введите текст письма")
@@ -50,7 +50,7 @@ class Message(models.Model):
 
 
 class Mailing(models.Model):
-    """Модель рассылок"""
+    """Модель рассылок."""
 
     start_at = models.DateTimeField(
         verbose_name="дата и время первой отправки",
@@ -89,7 +89,7 @@ class Mailing(models.Model):
 
 
 class Attempt(models.Model):
-    """Модель попыток рассылок"""
+    """Модель попыток рассылок."""
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата и время попытки")
     status = models.CharField(max_length=12, choices=ATTEMPT_STATUSES, verbose_name="статус")

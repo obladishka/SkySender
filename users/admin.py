@@ -7,8 +7,4 @@ from users.models import User
 class UserAdmin(admin.ModelAdmin):
     """Класс для регистрации модели пользователей в админке."""
 
-    exclude = (
-        "password",
-        "token",
-        "is_active",
-    )
+    list_display = ("id", "username", "email")
