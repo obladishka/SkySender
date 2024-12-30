@@ -589,3 +589,8 @@ MAILING_STATUSES = (
     ("started", "запущена"),
     ("finished", "завершена"),
 )
+
+ATTEMPT_STATUSES = (
+    ("successful", "yспешно"),
+    ("unsuccessful", "не yспешно"),
+)
