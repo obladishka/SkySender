@@ -62,6 +62,7 @@ class User(AbstractUser):
         max_length=30, choices=COUNTRIES, verbose_name="страна", help_text="Выберите страну", null=True, blank=True
     )
     token = models.CharField(max_length=100, verbose_name="токен", null=True, blank=True)
+    is_blocked = models.BooleanField(default=False, verbose_name="заблокирован")
 
     objects = UserManager()
 
@@ -74,3 +75,6 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "пользователь"
         verbose_name_plural = "пользователи"
+        permissions = [
+            ("can_block_user", "может заблокировать пользователя"),
+        ]

@@ -10,4 +10,5 @@ class UserAdmin(admin.ModelAdmin):
     exclude = (
         "password",
         "token",
+        "is_active",
     )
