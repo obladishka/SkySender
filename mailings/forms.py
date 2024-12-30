@@ -17,4 +17,6 @@ class RecipientForm(forms.ModelForm):
             {"class": "form-control", "placeholder": "name@example.com", "required": True}
         )
         self.fields["name"].widget.attrs.update({"class": "form-control", "placeholder": "Ф.И.О. клиента"})
-        self.fields["comment"].widget.attrs.update({"class": "form-control", "placeholder": "Комментарий по клиенту"})
+        self.fields["comment"].widget.attrs.update(
+            {"class": "form-control", "placeholder": "Комментарий по клиенту", "style": "height: 1em;"}
+        )

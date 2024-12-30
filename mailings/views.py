@@ -37,13 +37,15 @@ class RecipientDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
 class RecipientCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Класс для отображения подробной информации о клиенте."""
 
+    model = Recipient
     form_class = RecipientForm
     success_url = reverse_lazy("mailings:recipient_list")
     permission_required = "mailings.add_recipient"
+    template_name = "mailings/recipient_list.html"
 
     def form_valid(self, form):
         """Метод для кастомизации логики обработки формы."""
-        recipient = form.save()
+        recipient = form.save(commit=False)
         recipient.owner = self.request.user
         recipient.save()
         return super().form_valid(form)

@@ -1,6 +1,11 @@
 {% extends "mailings/base.html" %}
 {% block content %}
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-5">
+    {% if request.resolver_match.view_name == 'mailings:recipient_list' %}
+    <div class="d-flex flex-row-reverse my-2">
+        <a class="btn btn-sm btn-outline-primary fw-semibold" href="{% url 'mailings:add_recipient' %}">+ добавить клиента</a>
+    </div>
+    {% endif %}
     <table class="table">
         <thead>
         <tr>
@@ -12,12 +17,26 @@
         </tr>
         </thead>
         <tbody class="table-group-divider">
+        {% if request.resolver_match.view_name == 'mailings:add_recipient' %}
+        <tr>
+            <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <th scope="row" class="align-items-center"></th>
+            {% for field in form %}
+            <td>{{ field }}</td>
+            {% endfor %}
+            <td>
+                 <button type="submit" class="btn btn-primary">cохранить</button>
+            </td>
+            </form>
+        </tr>
+        {% endif %}
         {% for recipient in recipients %}
         <tr>
             <th scope="row" class="align-items-center">{{ forloop.counter }}</th>
             <td>{{ recipient.email }}</td>
             <td>{{ recipient.name }}</td>
-            <td>{{ recipient.comment }}</td>
+            <td>{{ recipient.comment|truncatechars:50 }}</td>
             <td>
                 <div class="d-flex justify-content-between align-items-center">
                     <a type="button" class="btn btn-link link-underline-opacity-0"
