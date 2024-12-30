@@ -4,7 +4,8 @@ from django.urls import path
 from django.views.decorators.cache import cache_page
 
 from mailings.apps import MailingsConfig
-from mailings.views import MainView, RecipientCreateView, RecipientDetailView, RecipientListView, RecipientUpdateView
+from mailings.views import (MainView, RecipientCreateView, RecipientDeleteView, RecipientDetailView, RecipientListView,
+                            RecipientUpdateView)
 
 app_name = MailingsConfig.name
 
@@ -14,6 +15,7 @@ urlpatterns = [
     path("recipients/new", RecipientCreateView.as_view(), name="add_recipient"),
     path("recipients/<int:pk>/edit/", RecipientUpdateView.as_view(), name="edit_recipient"),
     path("recipients/<int:pk>/", RecipientDetailView.as_view(), name="recipient_detail"),
+    path("recipients/<int:pk>/delete/", RecipientDeleteView.as_view(), name="delete_recipient"),
     # path("detail/<int:pk>/", cache_page(60 * 15)(ProductDetailView.as_view()), name="product_detail"),
     # path("new/", ProductCreateView.as_view(), name="add_product"),
     # path("<int:pk>/edit/", ProductUpdateView.as_view(), name="edit_product"),

@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
 from mailings.forms import RecipientForm
 from mailings.models import Recipient
@@ -53,10 +53,18 @@ class RecipientCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 
 
 class RecipientUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    """Класс для отображения подробной информации о клиенте."""
+    """Класс для редактирования информации о клиенте."""
 
     model = Recipient
     form_class = RecipientForm
     success_url = reverse_lazy("mailings:recipient_list")
     permission_required = "mailings.change_recipient"
     template_name = "mailings/recipient_list.html"
+
+
+class RecipientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Класс для удаления клиента."""
+
+    model = Recipient
+    success_url = reverse_lazy("mailings:recipient_list")
+    permission_required = "mailings.delete_recipient"
