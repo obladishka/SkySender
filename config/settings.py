@@ -583,3 +583,9 @@ COUNTRY_CODES = (
     ("996", "+996"),
     ("998", "+998"),
 )
+
+MAILING_STATUSES = (
+    ("created", "создана"),
+    ("started", "запущена"),
+    ("finished", "завершена"),
+)
