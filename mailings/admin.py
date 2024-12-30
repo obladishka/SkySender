@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from mailings.models import Recipient
+
+
+@admin.register(Recipient)
+class RecipientAdmin(admin.ModelAdmin):
+    """Класс для кастомной настройки отображения клиентов в админке."""
+
+    list_filter = ("owner",)
