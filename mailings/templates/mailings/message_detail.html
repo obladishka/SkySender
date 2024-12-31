@@ -2,17 +2,15 @@
 {% block content %}
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-5">
     <div class="d-flex justify-content-center">
-        <div class="card col-6">
+        <div class="card col-10 mb-5">
             <div class="card-header bg-primary text-white">
-                Карточка клиента
+                {{ message.subject }}
             </div>
             <div class="card-body bg-primary-subtle text-primary-emphasis">
-                <h5 class="card-title">{{ recipient.email }}</h5>
-                <h6 class="card-title">{{ recipient.name }}</h6>
-                <p class="card-text">{{ recipient.comment|linebreaks }}</p>
+                <p class="card-text">{{ message.message|linebreaks }}</p>
             </div>
             <div class="card-footer bg-primary-subtle text-primary-emphasis text-end">
-                <a href="{% url 'mailings:recipient_list' %}" class="btn btn-sm btn-primary">Назад >></a>
+                <a href="{% url 'mailings:message_list' %}" class="btn btn-sm btn-primary">Назад >></a>
             </div>
         </div>
     </div>

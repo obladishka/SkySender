@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -29,5 +30,6 @@ class UserService:
         """Функция для подтверждения почты."""
         user = get_object_or_404(User, token=token)
         user.is_active = True
+        user.groups.add(Group.objects.get(name="Users"))
         user.save()
         return redirect(reverse("users:login"))

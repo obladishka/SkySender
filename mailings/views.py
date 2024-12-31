@@ -2,8 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
-from mailings.forms import RecipientForm
-from mailings.models import Recipient
+from mailings.forms import MessageForm, RecipientForm
+from mailings.models import Message, Recipient
 
 
 class MainView(TemplateView):
@@ -36,7 +36,7 @@ class RecipientDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
 
 
 class RecipientCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    """Класс для отображения подробной информации о клиенте."""
+    """Класс для добавления нового клиента."""
 
     model = Recipient
     form_class = RecipientForm
@@ -68,3 +68,58 @@ class RecipientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVie
     model = Recipient
     success_url = reverse_lazy("mailings:recipient_list")
     permission_required = "mailings.delete_recipient"
+
+
+class MessageListView(LoginRequiredMixin, ListView):
+    """Класс для отображения списка сообщений."""
+
+    model = Message
+    context_object_name = "messages"
+
+    def get_queryset(self):
+        """Метод для формирования списка сообщений текущего пользователя."""
+
+        return self.request.user.messages.all()
+
+
+class MessageDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    """Класс для отображения полного текста письма."""
+
+    model = Message
+    permission_required = "mailings.view_message"
+    context_object_name = "message"
+
+
+class MessageCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Класс для добавления нового сообщения."""
+
+    model = Message
+    form_class = MessageForm
+    success_url = reverse_lazy("mailings:message_list")
+    permission_required = "mailings.add_message"
+    template_name = "mailings/message_list.html"
+
+    def form_valid(self, form):
+        """Метод для кастомизации логики обработки формы."""
+        message = form.save(commit=False)
+        message.owner = self.request.user
+        message.save()
+        return super().form_valid(form)
+
+
+class MessageUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """Класс для редактирования сообщения."""
+
+    model = Message
+    form_class = MessageForm
+    success_url = reverse_lazy("mailings:message_list")
+    permission_required = "mailings.change_message"
+    template_name = "mailings/message_list.html"
+
+
+class MessageDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Класс для удаления клиента."""
+
+    model = Message
+    success_url = reverse_lazy("mailings:message_list")
+    permission_required = "mailings.delete_message"

@@ -4,8 +4,9 @@ from django.urls import path
 from django.views.decorators.cache import cache_page
 
 from mailings.apps import MailingsConfig
-from mailings.views import (MainView, RecipientCreateView, RecipientDeleteView, RecipientDetailView, RecipientListView,
-                            RecipientUpdateView)
+from mailings.views import (MainView, MessageCreateView, MessageDeleteView, MessageDetailView, MessageListView,
+                            MessageUpdateView, RecipientCreateView, RecipientDeleteView, RecipientDetailView,
+                            RecipientListView, RecipientUpdateView)
 
 app_name = MailingsConfig.name
 
@@ -16,12 +17,11 @@ urlpatterns = [
     path("recipients/<int:pk>/edit/", RecipientUpdateView.as_view(), name="edit_recipient"),
     path("recipients/<int:pk>/", RecipientDetailView.as_view(), name="recipient_detail"),
     path("recipients/<int:pk>/delete/", RecipientDeleteView.as_view(), name="delete_recipient"),
-    # path("detail/<int:pk>/", cache_page(60 * 15)(ProductDetailView.as_view()), name="product_detail"),
-    # path("new/", ProductCreateView.as_view(), name="add_product"),
-    # path("<int:pk>/edit/", ProductUpdateView.as_view(), name="edit_product"),
-    # path("<int:pk>/delete/", ProductDeleteView.as_view(), name="delete_product"),
-    # path("contacts/", ContactsListViewWithPost.as_view(), name="contacts"),
-    # path("category/<int:pk>/", CategoryDetailView.as_view(), name="category_detail"),
+    path("messages/", MessageListView.as_view(), name="message_list"),
+    path("messages/new", MessageCreateView.as_view(), name="add_message"),
+    path("messages/<int:pk>/edit/", MessageUpdateView.as_view(), name="edit_message"),
+    path("messages/<int:pk>/", MessageDetailView.as_view(), name="message_detail"),
+    path("messages/<int:pk>/delete/", MessageDeleteView.as_view(), name="delete_message"),
 ]
 
 if settings.DEBUG:
