@@ -1,36 +1,47 @@
 {% extends "mailings/base.html" %}
 {% block content %}
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-5">
-    {% if perms.mailings.add_recipient %}
-    {% if request.resolver_match.view_name == 'mailings:recipient_list' %}
+    {% if request.resolver_match.view_name == 'mailings:mailing_list' %}
+    {% if perms.mailings.add_mailing %}
     <div class="d-flex flex-row-reverse my-2">
-        <a class="btn btn-sm btn-outline-primary fw-semibold" href="{% url 'mailings:add_recipient' %}">+ добавить
-            клиента</a>
-    </div>
-    {% elif request.resolver_match.view_name == 'mailings:add_recipient' or request.resolver_match.view_name == 'mailings:edit_recipient' %}
-    <div class="d-flex flex-row-reverse my-2">
-        <a class="link-offset-3 fw-semibold mx-2" href="{% url 'mailings:recipient_list' %}">назад >></a>
+        <a class="btn btn-sm btn-outline-primary fw-semibold" href="{% url 'mailings:add_mailing' %}">+ добавить
+            сообщение</a>
     </div>
     {% endif %}
+    {% elif request.resolver_match.view_name == 'mailings:add_mailing' or request.resolver_match.view_name == 'mailings:edit_mailing' %}
+    <div class="d-flex flex-row-reverse my-2">
+        <a class="link-offset-3 fw-semibold mx-2" href="{% url 'mailings:mailing_list' %}">назад >></a>
+    </div>
     {% endif %}
     <table class="table align-middle">
         <thead>
         <tr>
             <th scope="col" style="width:5%">#</th>
-            <th scope="col" style="width:15%">Email</th>
-            <th scope="col" style="width:30%">Ф.И.О.</th>
-            <th scope="col" style="width:45%">Комментарий</th>
+            <th scope="col" style="width:10%">Начало отправки</th>
+            <th scope="col" style="width:10%">Завершение отправки</th>
+            <th scope="col" style="width:10%">Статус</th>
+            <th scope="col" style="width:30%">Сообщение</th>
+            <th scope="col" style="width:30%">Получатели</th>
             <th scope="col" style="width:5%">Действие</th>
         </tr>
         </thead>
         <tbody class="table-group-divider">
-        {% if request.resolver_match.view_name == 'mailings:add_recipient' or request.resolver_match.view_name == 'mailings:edit_recipient' %}
+        {% if request.resolver_match.view_name == 'mailings:add_mailing' or request.resolver_match.view_name == 'mailings:edit_mailing' %}
         <tr>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <th scope="row" class="align-items-center"></th>
                 {% for field in form %}
+                {% if field.lable == "is_disabled" %}
+                <td>
+                    <div class="d-flex justify-content-between align-items-center">
+                        {{ field.lable_tag }}
+                        {{ field }}
+                    </div>
+                </td>
+                {% else %}
                 <td>{{ field }}</td>
+                {% endif %}
                 {% endfor %}
                 <td>
                     <button type="submit" class="btn btn-primary">cохранить</button>
@@ -38,17 +49,24 @@
             </form>
         </tr>
         {% endif %}
-        {% for recipient in recipients %}
+        {% for mailing in mailings %}
         <tr>
-            <th scope="row" class="align-items-center">{{ forloop.counter }}</th>
-            <td>{{ recipient.email }}</td>
-            <td>{{ recipient.name }}</td>
-            <td>{{ recipient.comment|truncatechars:50 }}</td>
+            <th scope="row" class="align-items-center {% if mailing.is_disabled %}text-secondary{% endif %}">{{ forloop.counter }}</th>
+            <td class="{% if mailing.is_disabled %}text-secondary{% endif %}">{{ mailing.start_at|date:"d.m.y H:i" }}</td>
+            <td class="{% if mailing.is_disabled %}text-secondary{% endif %}">{{ mailing.end_at|date:"d.m.y H:i" }}</td>
+            <td class="{% if mailing.is_disabled %}text-secondary{% endif %}">{{ mailing.get_status_display }}</td>
+            <td class="{% if mailing.is_disabled %}text-secondary{% endif %}">{{ mailing.message|truncatechars:50 }}</td>
+            <td class="{% if mailing.is_disabled %}text-secondary{% endif %}">
+                {% for recipient in mailing.recipients.all %}
+                {{ recipient }};
+                <br>
+                {% endfor %}
+            </td>
             <td>
                 <div class="d-flex justify-content-between align-items-center">
-                    {% if perms.mailings.view_recipient %}
-                    <a type="button" class="btn btn-link link-underline-opacity-0"
-                       href="{% url 'mailings:recipient_detail' recipient.pk %}">
+                    {% if perms.mailings.view_mailing %}
+                    <a type="button" class="btn btn-link link-underline-opacity-0 {% if mailing.is_disabled %}text-secondary{% endif %}"
+                       href="{% url 'mailings:mailing_detail' mailing.pk %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-eye" viewBox="0 0 16 16">
                             <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
@@ -56,9 +74,9 @@
                         </svg>
                     </a>
                     {% endif %}
-                    {% if perms.mailings.change_recipient %}
-                    <a type="button" class="btn btn-link link-underline-opacity-0"
-                       href="{% url 'mailings:edit_recipient' recipient.pk %}">
+                    {% if perms.mailings.change_mailing or perms.mailings.can_disable_mailing %}
+                    <a type="button" class="btn btn-link link-underline-opacity-0 {% if mailing.is_disabled %}text-secondary{% endif %}"
+                       href="{% url 'mailings:edit_mailing' mailing.pk %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-pencil-square" viewBox="0 0 16 16">
                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
@@ -67,19 +85,21 @@
                         </svg>
                     </a>
                     {% endif %}
-                    {% if perms.mailings.delete_recipient %}
-                    <a type="button" class="btn btn-link link-underline-opacity-0" data-bs-toggle="modal"
-                       data-bs-target="#deleteModal-{{ recipient.id }}">
+                    {% if perms.mailings.delete_mailing %}
+                    <a type="button" class="btn btn-link link-underline-opacity-0 {% if mailing.is_disabled %}text-secondary{% endif %}" data-bs-toggle="modal"
+                       data-bs-target="#deleteModal-{{ mailing.pk }}"
+                       href="{% url 'mailings:delete_mailing' mailing.pk %}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                              class="bi bi-trash3" viewBox="0 0 16 16">
                             <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
                         </svg>
                     </a>
                     {% endif %}
-                    <div class="modal fade" id="deleteModal-{{ recipient.id }}" tabindex="-1" aria-labelledby="deleteModalLabel"
-                             aria-hidden="true">
+                    <div class="modal fade" id="deleteModal-{{ mailing.pk }}" tabindex="-1"
+                         aria-labelledby="deleteModalLabel"
+                         aria-hidden="true">
                         <div class="modal-dialog text-black">
-                            <form method="post" action="{% url 'mailings:delete_recipient' recipient.pk %}">
+                            <form method="post" action="{% url 'mailings:delete_mailing' mailing.pk %}">
                                 {% csrf_token %}
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -88,7 +108,10 @@
                                                 aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        Вы действительно хотите удалить {{ recipient.email }}?
+                                        Вы действительно хотите удалить рассылку "{{ mailing.message.subject }}"
+                                        {% if mailing.start_at %} c {{ mailing.start_at|date:"d.m.y H:i" }}
+                                        {% elif mailing.end_at %} до {{ mailing.end_at|date:"d.m.y H:i" }}
+                                        {% endif %}?
                                     </div>
                                     <div class="modal-footer">
                                         <div class="d-flex gap-3">

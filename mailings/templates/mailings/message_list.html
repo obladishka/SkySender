@@ -7,7 +7,7 @@
         <a class="btn btn-sm btn-outline-primary fw-semibold" href="{% url 'mailings:add_message' %}">+ добавить
             сообщение</a>
     </div>
-    {% elif request.resolver_match.view_name == 'mailings:add_message' %}
+    {% elif request.resolver_match.view_name == 'mailings:add_message' or request.resolver_match.view_name == 'mailings:edit_message' %}
     <div class="d-flex flex-row-reverse my-2">
         <a class="link-offset-3 fw-semibold mx-2" href="{% url 'mailings:message_list' %}">назад >></a>
     </div>

@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
-from mailings.forms import MessageForm, RecipientForm
-from mailings.models import Message, Recipient
+from mailings.forms import MailingForm, MailingManagerForm, MessageForm, RecipientForm
+from mailings.models import Mailing, Message, Recipient
 
 
 class MainView(TemplateView):
@@ -23,7 +24,7 @@ class RecipientListView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         if user.has_perm("mailings.can_disable_mailing"):
-            return Recipient.objects.all()
+            return self.model.objects.all()
         return user.recipients.all()
 
 
@@ -118,8 +119,94 @@ class MessageUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
 
 
 class MessageDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
-    """Класс для удаления клиента."""
+    """Класс для удаления сообщения."""
 
     model = Message
     success_url = reverse_lazy("mailings:message_list")
     permission_required = "mailings.delete_message"
+
+
+class MailingListView(LoginRequiredMixin, ListView):
+    """Класс для отображения списка рассылок."""
+
+    model = Mailing
+    context_object_name = "mailings"
+
+    def get_queryset(self):
+        """Метод для формирования списка рассылок в зависимости от статуса пользователя."""
+        user = self.request.user
+
+        if user.has_perm("mailings.can_disable_mailing"):
+            return self.model.objects.all()
+        return self.model.objects.filter(owner=user, is_disabled=False)
+
+
+class MailingDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    """Класс для отображения полной информации о рассылке."""
+
+    model = Mailing
+    permission_required = "mailings.view_mailing"
+    context_object_name = "mailing"
+
+
+class MailingCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Класс для добавления новой рассылки."""
+
+    model = Mailing
+    form_class = MailingForm
+    success_url = reverse_lazy("mailings:mailing_list")
+    permission_required = "mailings.add_mailing"
+    template_name = "mailings/mailing_list.html"
+
+    def get_form_kwargs(self):
+        """Метод для фильтрации данных в полях формы."""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"user": self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        """Метод для кастомизации логики обработки формы."""
+        mailing = form.save(commit=False)
+        mailing.owner = self.request.user
+        mailing.save()
+        return super().form_valid(form)
+
+
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
+    """Класс для редактирования рассылки."""
+
+    model = Mailing
+    success_url = reverse_lazy("mailings:mailing_list")
+    template_name = "mailings/mailing_list.html"
+
+    def get_form_class(self):
+        """Метод для выбора формы в зависимости от прав пользователя."""
+        user = self.request.user
+
+        if user == self.object.owner:
+            return MailingForm
+        if user.has_perm("mailings.can_disable_mailing"):
+            return MailingManagerForm
+        raise PermissionDenied
+
+    def get_form_kwargs(self):
+        """Метод для фильтрации данных в полях формы."""
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"user": self.request.user})
+        return kwargs
+
+    def get_template_names(self):
+        """Метод для выбора темплейта для формы в зависимости от прав пользователя."""
+        user = self.request.user
+
+        if user.has_perm("mailings.can_disable_mailing"):
+            return "mailings/mailing_detail.html"
+        return "mailings/mailing_list.html"
+
+
+class MailingDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Класс для удаления рассылки."""
+
+    model = Mailing
+    success_url = reverse_lazy("mailings:mailing_list")
+    permission_required = "mailings.delete_mailing"

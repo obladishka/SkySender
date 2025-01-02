@@ -1,6 +1,6 @@
 from django import forms
 
-from mailings.models import Message, Recipient
+from mailings.models import Mailing, Message, Recipient
 
 
 class RecipientForm(forms.ModelForm):
@@ -40,3 +40,50 @@ class MessageForm(forms.ModelForm):
         self.fields["message"].widget.attrs.update(
             {"class": "form-control", "placeholder": "Текст письма", "style": "height: 5em;"}
         )
+
+
+class MailingForm(forms.ModelForm):
+    """Форма для добавления или редактирования рассылок."""
+
+    class Meta:
+        model = Mailing
+        exclude = ("owner", "is_disabled")
+
+    def __init__(self, *args, **kwargs):
+        """Метод для стилизации формы."""
+        user = kwargs.pop("user")
+        super(MailingForm, self).__init__(*args, **kwargs)
+
+        self.fields["start_at"].widget = forms.DateTimeInput(
+            attrs={"class": "form-control", "type": "datetime-local", "style": "width: 10em;"}
+        )
+        self.fields["end_at"].widget = forms.DateTimeInput(
+            attrs={"class": "form-control", "type": "datetime-local", "style": "width: 11em;"}
+        )
+        self.fields["status"].widget.attrs.update(
+            {"class": "form-select", "placeholder": "Статус", "style": "width: 5em;"}
+        )
+        self.fields["message"].queryset = user.messages.all()
+        self.fields["message"].widget.attrs.update(
+            {"class": "form-select", "placeholder": "Сообщение", "style": "width: 5em;"}
+        )
+        self.fields["recipients"] = forms.ModelMultipleChoiceField(
+            queryset=user.recipients.all(),
+        )
+        self.fields["recipients"].widget.attrs.update({"style": "width: 15em;"})
+
+
+class MailingManagerForm(forms.ModelForm):
+    """Форма для редактирования товара, доступная для менеджера."""
+
+    class Meta:
+        model = Mailing
+        fields = ("is_disabled",)
+
+    def __init__(self, *args, **kwargs):
+        """Метод для стилизации формы."""
+        kwargs.pop("user")
+        super(MailingManagerForm, self).__init__(*args, **kwargs)
+
+        self.fields["is_disabled"].widget.attrs.update({"class": "form-check-input"})
+        self.fields["is_disabled"].label = "Отключить рассылку"
