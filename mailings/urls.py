@@ -4,6 +4,7 @@ from django.urls import path
 from django.views.decorators.cache import cache_page
 
 from mailings.apps import MailingsConfig
+from mailings.services import MailingService
 from mailings.views import (MailingCreateView, MailingDeleteView, MailingDetailView, MailingListView,
                             MailingUpdateView, MainView, MessageCreateView, MessageDeleteView, MessageDetailView,
                             MessageListView, MessageUpdateView, RecipientCreateView, RecipientDeleteView,
@@ -28,6 +29,7 @@ urlpatterns = [
     path("mailings/<int:pk>/edit/", MailingUpdateView.as_view(), name="edit_mailing"),
     path("mailings/<int:pk>/", MailingDetailView.as_view(), name="mailing_detail"),
     path("mailings/<int:pk>/delete/", MailingDeleteView.as_view(), name="delete_mailing"),
+    path("mailings/<int:pk>/send/", MailingService.send_mailing, name="send_mailing"),
 ]
 
 if settings.DEBUG:
