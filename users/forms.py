@@ -1,5 +1,5 @@
-from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm, SetPasswordForm, UserChangeForm,
-                                       UserCreationForm)
+from django import forms
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, UserCreationForm
 
 from users.models import User
 
@@ -55,6 +55,21 @@ class UserAuthenticationForm(AuthenticationForm):
             {"class": "form-control", "placeholder": "name@example.com", "required": True}
         )
         self.fields["password"].widget.attrs.update({"class": "form-control", "required": True})
+
+
+class UserManagerForm(forms.ModelForm):
+    """Форма для блокировки пользователей."""
+
+    class Meta:
+        model = User
+        fields = ("is_blocked",)
+
+    def __init__(self, *args, **kwargs):
+        """Метод для стилизации формы."""
+        super(UserManagerForm, self).__init__(*args, **kwargs)
+
+        self.fields["is_blocked"].widget.attrs.update({"class": "form-check-input"})
+        self.fields["is_blocked"].label = "Заблокировать"
 
 
 class UserPasswordResetForm(FormStylingMixin, PasswordResetForm):

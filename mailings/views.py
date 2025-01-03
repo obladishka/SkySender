@@ -177,7 +177,6 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Mailing
     success_url = reverse_lazy("mailings:mailing_list")
-    template_name = "mailings/mailing_list.html"
 
     def get_form_class(self):
         """Метод для выбора формы в зависимости от прав пользователя."""
