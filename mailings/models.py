@@ -94,7 +94,7 @@ class Attempt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="дата и время попытки")
     status = models.CharField(max_length=12, choices=ATTEMPT_STATUSES, verbose_name="статус")
     server_response = models.TextField(verbose_name="ответ почтового сервера")
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, verbose_name="рассылка")
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name="attempts", verbose_name="рассылка")
 
     def __str__(self):
         return f"{self.mailing}: {self.status}"

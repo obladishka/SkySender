@@ -5,12 +5,51 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, T
 
 from mailings.forms import MailingForm, MailingManagerForm, MessageForm, RecipientForm
 from mailings.models import Mailing, Message, Recipient
+from users.models import User
 
 
 class MainView(TemplateView):
     """Класс для отображения главной страницы."""
 
     template_name = "mailings/main.html"
+
+    def get_context_data(self, **kwargs):
+        """Метод для добавления дополнительных параметров в контекст."""
+
+        context = super().get_context_data(**kwargs)
+        context["users"] = User.objects.filter(is_blocked=False).distinct().count()
+        context["active_mailings"] = Mailing.objects.filter(status="started").distinct().count()
+        context["mailings"] = Mailing.objects.filter(is_disabled=False).distinct().count()
+        return context
+
+
+class StatisticsView(LoginRequiredMixin, TemplateView):
+    """Класс для отображения страницы со статистикой по рассылкам."""
+
+    template_name = "mailings/statistics.html"
+
+    def get_context_data(self, **kwargs):
+        """Метод для добавления дополнительных параметров в контекст."""
+
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        mailings = user.mailings.all()
+
+        successful = 0
+        unsuccessful = 0
+
+        for mailing in mailings:
+            if mailing.attempts.filter(status="successful"):
+                successful += 1
+            elif mailing.attempts.filter(status="unsuccessful"):
+                unsuccessful += 1
+        context["overall"] = Mailing.objects.filter(
+            owner=user, status__in=("started", "finished"), is_disabled=False
+        ).count()
+        context["successful"] = successful
+        context["unsuccessful"] = unsuccessful
+
+        return context
 
 
 class RecipientListView(LoginRequiredMixin, ListView):

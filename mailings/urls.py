@@ -8,7 +8,7 @@ from mailings.services import MailingService
 from mailings.views import (MailingCreateView, MailingDeleteView, MailingDetailView, MailingListView,
                             MailingUpdateView, MainView, MessageCreateView, MessageDeleteView, MessageDetailView,
                             MessageListView, MessageUpdateView, RecipientCreateView, RecipientDeleteView,
-                            RecipientDetailView, RecipientListView, RecipientUpdateView)
+                            RecipientDetailView, RecipientListView, RecipientUpdateView, StatisticsView)
 
 app_name = MailingsConfig.name
 
@@ -30,6 +30,7 @@ urlpatterns = [
     path("mailings/<int:pk>/", MailingDetailView.as_view(), name="mailing_detail"),
     path("mailings/<int:pk>/delete/", MailingDeleteView.as_view(), name="delete_mailing"),
     path("mailings/<int:pk>/send/", MailingService.send_mailing, name="send_mailing"),
+    path("statistics/", StatisticsView.as_view(), name="statistics"),
 ]
 
 if settings.DEBUG:
