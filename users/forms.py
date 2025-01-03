@@ -1,6 +1,16 @@
-from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
+from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm, SetPasswordForm, UserChangeForm,
+                                       UserCreationForm)
 
 from users.models import User
+
+
+class FormStylingMixin:
+    """Примесь для стилизации форм."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs["class"] = "form-control"
 
 
 class UserForm(UserCreationForm):
@@ -45,3 +55,13 @@ class UserAuthenticationForm(AuthenticationForm):
             {"class": "form-control", "placeholder": "name@example.com", "required": True}
         )
         self.fields["password"].widget.attrs.update({"class": "form-control", "required": True})
+
+
+class UserPasswordResetForm(FormStylingMixin, PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super(UserPasswordResetForm, self).__init__(*args, **kwargs)
+
+
+class UserSetPasswordForm(FormStylingMixin, SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(UserSetPasswordForm, self).__init__(*args, **kwargs)

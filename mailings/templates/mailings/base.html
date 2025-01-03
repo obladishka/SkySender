@@ -10,9 +10,8 @@
     <link href="{% static 'css/mailings.css' %}" rel="stylesheet">
 </head>
 <body>
-{% if not request.resolver_match.view_name == 'users:register' and not request.resolver_match.view_name == 'users:login' %}
-    {% include "mailings/includes/header.html" %}
-{% endif %}
+
+{% include "mailings/includes/header.html" %}
 {% if user.is_authenticated %}
     {% if perms.mailings.can_disable_mailing %}
         {% include "mailings/includes/manager_menu.html" %}
