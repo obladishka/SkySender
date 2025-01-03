@@ -16,16 +16,6 @@ class RegisterView(CreateView):
     template_name = "registration/login.html"
     success_url = reverse_lazy("mailings:main")
 
-    def get_context_data(self, **kwargs):
-        """Метод для добавления дополнительных параметров в контекст."""
-
-        context = super().get_context_data(**kwargs)
-        context["subject"] = "Спасибо за выбор SkySender!"
-        context["text"] = (
-            "Для завершения регистрации подтвердите свой Email, перейдя по ссылке, отправленной на Вашу почту."
-        )
-        return context
-
     def form_valid(self, form):
         """Метод для кастомизации логики обработки формы."""
         user = form.save()

@@ -1,4 +1,4 @@
-<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel"
+<div class="modal fade" id="infoModal-{{ object.pk }}" tabindex="-1" aria-labelledby="infoModalLabel"
      aria-hidden="true">
     <div class="modal-dialog text-black">
         <div class="modal-content">
@@ -8,11 +8,11 @@
                         aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {{ text }}
+                {{ text1 }}{{ title }}{{ text2 }}
             </div>
             <div class="modal-footer">
                 <div class="d-flex text-end">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ок</button>
+                    <button type="submit" class="btn btn-primary">Ок</button>
                 </div>
             </div>
         </div>

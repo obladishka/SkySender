@@ -4,8 +4,7 @@
     {% if request.resolver_match.view_name == 'mailings:mailing_list' %}
     {% if perms.mailings.add_mailing %}
     <div class="d-flex flex-row-reverse my-2">
-        <a class="btn btn-sm btn-outline-primary fw-semibold" href="{% url 'mailings:add_mailing' %}">+ добавить
-            сообщение</a>
+        <a class="btn btn-sm btn-outline-primary fw-semibold" href="{% url 'mailings:add_mailing' %}">+ новая рассылка</a>
     </div>
     {% endif %}
     {% elif request.resolver_match.view_name == 'mailings:add_mailing' or request.resolver_match.view_name == 'mailings:edit_mailing' %}
@@ -32,19 +31,10 @@
                 {% csrf_token %}
                 <th scope="row" class="align-items-center"></th>
                 {% for field in form %}
-                {% if field.lable == "is_disabled" %}
-                <td>
-                    <div class="d-flex justify-content-between align-items-center">
-                        {{ field.lable_tag }}
-                        {{ field }}
-                    </div>
-                </td>
-                {% else %}
                 <td>{{ field }}</td>
-                {% endif %}
                 {% endfor %}
                 <td>
-                    <button type="submit" class="btn btn-primary">cохранить</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
                 </td>
             </form>
         </tr>
@@ -91,86 +81,48 @@
                     </a>
                     {% endif %}
                     {% if perms.mailings.delete_mailing %}
-                    <a type="button"
-                       class="btn btn-link link-underline-opacity-0 {% if mailing.is_disabled %}text-secondary{% endif %}"
-                       data-bs-toggle="modal"
-                       data-bs-target="#deleteModal-{{ mailing.pk }}"
-                       href="{% url 'mailings:delete_mailing' mailing.pk %}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-trash3" viewBox="0 0 16 16">
-                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-                        </svg>
-                    </a>
+                    {% block deletemodal %}
+                        {% with mailing as object %}
+                            {% with "mailings:delete_mailing" as myurl %}
+                            {% with "Вы действительно хотите удалить рассылку" as text %}
+                            {% with mailing.message.subject as title %}
+                            <a type="button"
+                               class="btn btn-link link-underline-opacity-0 {% if mailing.is_disabled %}text-secondary{% endif %}"
+                               data-bs-toggle="modal"
+                               data-bs-target="#deleteModal-{{ mailing.pk }}"
+                               href="{% url 'mailings:delete_mailing' mailing.pk %}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                                </svg>
+                            </a>
+                            {{ block.super }}
+                            {% endwith %}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endwith %}
+                    {% endblock %}
                     {% endif %}
-                    <div class="modal fade" id="deleteModal-{{ mailing.pk }}" tabindex="-1"
-                         aria-labelledby="deleteModalLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog text-black">
-                            <form method="post" action="{% url 'mailings:delete_mailing' mailing.pk %}">
-                                {% csrf_token %}
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <p class="modal-title fs-5" id="deleteModalLabel"></p>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Вы действительно хотите удалить рассылку "{{ mailing.message.subject }}"
-                                        {% if mailing.start_at %} c {{ mailing.start_at|date:"d.m.y H:i" }}
-                                        {% elif mailing.end_at %} до {{ mailing.end_at|date:"d.m.y H:i" }}
-                                        {% endif %}?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <div class="d-flex gap-3">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Отмена
-                                            </button>
-                                            <button type="submit" class="btn btn-danger">Удалить</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                     {% if user == mailing.owner %}
-                    <button type="button" class="btn btn-link link-underline-opacity-0"
-                       data-bs-toggle="modal" data-bs-target="#confirmModal-{{ mailing.pk }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-envelope-at" viewBox="0 0 16 16">
-                            <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2zm3.708 6.208L1 11.105V5.383zM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2z"/>
-                            <path d="M14.247 14.269c1.01 0 1.587-.857 1.587-2.025v-.21C15.834 10.43 14.64 9 12.52 9h-.035C10.42 9 9 10.36 9 12.432v.214C9 14.82 10.438 16 12.358 16h.044c.594 0 1.018-.074 1.237-.175v-.73c-.245.11-.673.18-1.18.18h-.044c-1.334 0-2.571-.788-2.571-2.655v-.157c0-1.657 1.058-2.724 2.64-2.724h.04c1.535 0 2.484 1.05 2.484 2.326v.118c0 .975-.324 1.39-.639 1.39-.232 0-.41-.148-.41-.42v-2.19h-.906v.569h-.03c-.084-.298-.368-.63-.954-.63-.778 0-1.259.555-1.259 1.4v.528c0 .892.49 1.434 1.26 1.434.471 0 .896-.227 1.014-.643h.043c.118.42.617.648 1.12.648m-2.453-1.588v-.227c0-.546.227-.791.573-.791.297 0 .572.192.572.708v.367c0 .573-.253.744-.564.744-.354 0-.581-.215-.581-.8Z"/>
-                        </svg>
-                    </button>
-                    <div class="modal fade" id="confirmModal-{{ mailing.pk }}" tabindex="-1"
-                         aria-labelledby="confirmModalLabel"
-                         aria-hidden="true">
-                        <div class="modal-dialog text-black">
-                            <form method="post" action="{% url 'mailings:delete_mailing' mailing.pk %}">
-                                {% csrf_token %}
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <p class="modal-title fs-5" id="confirmModalLabel"></p>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Подтвердите отправку сообщения "{{ mailing.message.subject }}"
-                                    </div>
-                                    <div class="modal-footer">
-                                        <div class="d-flex gap-3">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Отмена
-                                            </button>
-                                            <a type="button" class="btn btn-primary"
-                                               href="{% url 'mailings:send_mailing' mailing.pk %}">
-                                                Отправить
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    {% block confirmmodal %}
+                        {% with mailing as object %}
+                            {% with "mailings:send_mailing" as myurl %}
+                            {% with "Подтвердите отправку сообщения" as text %}
+                            {% with mailing.message.subject as title %}
+                            <button type="button" class="btn btn-link link-underline-opacity-0"
+                               data-bs-toggle="modal" data-bs-target="#confirmModal-{{ mailing.pk }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-envelope-at" viewBox="0 0 16 16">
+                                    <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2zm3.708 6.208L1 11.105V5.383zM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2z"/>
+                                    <path d="M14.247 14.269c1.01 0 1.587-.857 1.587-2.025v-.21C15.834 10.43 14.64 9 12.52 9h-.035C10.42 9 9 10.36 9 12.432v.214C9 14.82 10.438 16 12.358 16h.044c.594 0 1.018-.074 1.237-.175v-.73c-.245.11-.673.18-1.18.18h-.044c-1.334 0-2.571-.788-2.571-2.655v-.157c0-1.657 1.058-2.724 2.64-2.724h.04c1.535 0 2.484 1.05 2.484 2.326v.118c0 .975-.324 1.39-.639 1.39-.232 0-.41-.148-.41-.42v-2.19h-.906v.569h-.03c-.084-.298-.368-.63-.954-.63-.778 0-1.259.555-1.259 1.4v.528c0 .892.49 1.434 1.26 1.434.471 0 .896-.227 1.014-.643h.043c.118.42.617.648 1.12.648m-2.453-1.588v-.227c0-.546.227-.791.573-.791.297 0 .572.192.572.708v.367c0 .573-.253.744-.564.744-.354 0-.581-.215-.581-.8Z"/>
+                                </svg>
+                            </button>
+                            {{ block.super }}
+                            {% endwith %}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endwith %}
+                    {% endblock %}
                     {% endif %}
                 </div>
             </td>

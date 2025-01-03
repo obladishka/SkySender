@@ -28,11 +28,17 @@
                     </ul>
                     <div class="col-12 text-center">
                         {% if request.resolver_match.view_name == 'users:register' %}
-                        <button type="submit" class="btn col-8 btn-primary mb-2" data-bs-toggle="modal"
-                    data-bs-target="#infoModal">
-                            Зарегистрироваться
-                        </button>
-                        {% include "mailings/includes/info_modal.html" %}
+                        {% block infomodal %}
+                            {% with "Спасибо за выбор SkySender!" as subject %}
+                            {% with "Для завершения регистрации подтвердите свой Email, перейдя по ссылке, отправленной на Вашу почту." as text1 %}
+                            <button type="submit" class="btn col-8 btn-primary mb-2" data-bs-toggle="modal"
+                        data-bs-target="#infoModal-{{ object.pk }}">
+                                Зарегистрироваться
+                            </button>
+                            {{ block.super }}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endblock %}
                         {% else %}
                         <button type="submit" class="btn col-6 btn-primary mb-2">
                             Войти

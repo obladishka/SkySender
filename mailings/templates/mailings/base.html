@@ -20,7 +20,11 @@
         {% include "mailings/includes/user_menu.html" %}
     {% endif %}
 {% endif %}
-{% block content %}{% endblock %}
+{% block content %}
+{% block infomodal %}{% include "mailings/includes/info_modal.html" %}{% endblock %}
+{% block confirmmodal %}{% include "mailings/includes/confirm_modal.html" %}{% endblock %}
+{% block deletemodal %}{% include "mailings/includes/delete_modal.html" %}{% endblock %}
+{% endblock %}
 
 <script src="/static/js/bootstrap.bundle.min.js"></script>
 </body>
