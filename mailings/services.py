@@ -1,9 +1,9 @@
 import smtplib
-from datetime import datetime
 
 from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils import timezone
 
 from mailings.models import Attempt, Mailing
 
@@ -20,7 +20,7 @@ class MailingService:
         message = mailing.message.message
         recipients = [recipient.email for recipient in mailing.recipients.all()]
 
-        start_at = datetime.now()
+        start_at = timezone.now()
 
         try:
             response = send_mail(subject, message, None, recipients, fail_silently=False)
@@ -29,7 +29,7 @@ class MailingService:
         else:
             MailingService.log_attempt(status="successful", response=response, mailing=mailing)
         finally:
-            end_at = datetime.now()
+            end_at = timezone.now()
             MailingService.update_mailing_status(mailing=mailing, start_at=start_at, end_at=end_at)
             return redirect(reverse("mailings:mailing_list"))
 
