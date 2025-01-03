@@ -1,10 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
-from config.settings import CACHE_ENABLED
 from mailings.forms import MailingForm, MailingManagerForm, MessageForm, RecipientForm
 from mailings.models import Mailing, Message, Recipient
 from users.models import User
@@ -64,17 +62,6 @@ class RecipientListView(LoginRequiredMixin, ListView):
         """Метод для формирования списка клиентов в зависимости от статуса пользователя."""
         user = self.request.user
 
-        if CACHE_ENABLED:
-            queryset = cache.get("recipient_list")
-
-            if not queryset:
-                if user.has_perm("mailings.can_disable_mailing"):
-                    queryset = self.model.objects.all()
-                else:
-                    queryset = user.recipients.all()
-                cache.set("recipient_list", queryset, 5)
-            return queryset
-
         if user.has_perm("mailings.can_disable_mailing"):
             return self.model.objects.all()
         return user.recipients.all()
@@ -132,14 +119,6 @@ class MessageListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Метод для формирования списка сообщений текущего пользователя."""
 
-        if CACHE_ENABLED:
-            queryset = cache.get("message_list")
-
-            if not queryset:
-                queryset = self.request.user.messages.all()
-                cache.set("message_list", queryset, 5)
-            return queryset
-
         return self.request.user.messages.all()
 
 
@@ -195,17 +174,6 @@ class MailingListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Метод для формирования списка рассылок в зависимости от статуса пользователя."""
         user = self.request.user
-
-        if CACHE_ENABLED:
-            queryset = cache.get("mailing_list")
-
-            if not queryset:
-                if user.has_perm("mailings.can_disable_mailing"):
-                    queryset = self.model.objects.all()
-                else:
-                    queryset = self.model.objects.filter(owner=user, is_disabled=False)
-                cache.set("mailing_list", queryset, 5)
-            return queryset
 
         if user.has_perm("mailings.can_disable_mailing"):
             return self.model.objects.all()
