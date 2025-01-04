@@ -6,7 +6,7 @@ from mailings.services import MailingService
 
 
 class Command(BaseCommand):
-    """Класс для создания команды отправки рассылки через консоль."""
+    help_text = "Команда отправки рассылки через консоль."
 
     def handle(self, *args, **options):
         mailings = Mailing.objects.filter(status__in=("started", "created"))
