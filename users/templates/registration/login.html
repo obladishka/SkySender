@@ -1,0 +1,59 @@
+{% extends "mailings/base.html" %}
+
+{% block content %}
+<main class="container mt-3">
+    <div class="row g-5 mt-3">
+        <div class="col-4"></div>
+        <div class="card col-4 shadow p-3 bg-body-tertiary rounded">
+            <div class="card-body">
+                <p class="fs-3 text-center">{% if request.resolver_match.view_name == 'users:register' %}Регистрация{% else %}Вход{% endif %}</p>
+                <form method="post" class="row g-3" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="col-12">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        <p class="fs-6 fw-light fst-italic lh-1 my-1">{{ field.help_text }}</p>
+                        <div class="form-error fs-6 fw-semibold fst-italic text-danger lh-1 my-1">{{ field.errors }}</div>
+                    </div>
+                    {% endfor %}
+                    <div class="form-error fs-6 fw-semibold fst-italic text-danger lh-1 my-1">{{ form.non_field_errors }}</div>
+                    <div class="col-12 text-center">
+                        {% if request.resolver_match.view_name == 'users:login' and form.non_field_errors %}
+                        <p class="mt-0 mb-2">
+                            <a href="{% url 'users:password_reset' %}" class="link">
+                                Забыли пароль?
+                            </a>
+                        </p>
+                        {% endif %}
+                        {% if request.resolver_match.view_name == 'users:register' %}
+                        {% block infomodal %}
+                            {% with "Спасибо за выбор SkySender!" as subject %}
+                            {% with "Для завершения регистрации подтвердите свой Email, перейдя по ссылке, отправленной на Вашу почту." as text1 %}
+                            <button type="submit" class="btn col-8 btn-primary mb-2" data-bs-toggle="modal"
+                        data-bs-target="#infoModal-{{ object.pk }}">
+                                Зарегистрироваться
+                            </button>
+                            {{ block.super }}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endblock %}
+                        {% else %}
+                        <button type="submit" class="btn col-6 btn-primary mb-2">
+                            Войти
+                        </button>
+                        {% endif %}
+                        {% if request.resolver_match.view_name == 'users:login' %}
+                        <p class="mt-2 mb-0">
+                            Нет аккаунта?
+                            <a href="{% url 'users:register' %}" class="link">
+                                Зарегистрироваться
+                            </a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-4"></div>
+        {% endblock %}

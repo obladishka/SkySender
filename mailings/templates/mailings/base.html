@@ -1,0 +1,30 @@
+<!doctype html>
+{% load static %}
+<html lang="en" data-bs-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <title>SkySender</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/mailings.css' %}" rel="stylesheet">
+</head>
+<body>
+
+{% include "mailings/includes/header.html" %}
+{% if user.is_authenticated %}
+    {% if perms.mailings.can_disable_mailing %}
+        {% include "mailings/includes/manager_menu.html" %}
+        {% else %}
+        {% include "mailings/includes/user_menu.html" %}
+    {% endif %}
+{% endif %}
+{% block content %}
+{% block infomodal %}{% include "mailings/includes/info_modal.html" %}{% endblock %}
+{% block confirmmodal %}{% include "mailings/includes/confirm_modal.html" %}{% endblock %}
+{% block deletemodal %}{% include "mailings/includes/delete_modal.html" %}{% endblock %}
+{% endblock %}
+
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<div class="modal fade" id="infoModal-{{ object.pk }}" tabindex="-1" aria-labelledby="infoModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog text-black">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title fs-5" id="infoModalLabel">{{ subject }}</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ text1 }}{{ title }}{{ text2 }}
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex text-end">
+                    <button type="submit" class="btn btn-primary">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

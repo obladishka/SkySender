@@ -1,0 +1,29 @@
+{% extends "mailings/base.html" %}
+{% block content %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-5">
+    <div class="d-flex justify-content-center">
+        <div class="card col-10 mb-5">
+            <div class="card-header bg-primary text-white">
+                Карточка пользователя
+            </div>
+            <div class="card-body bg-primary-subtle text-primary-emphasis">
+                <h5 class="card-title">{{ user.email }}</h5>
+                {% if user.username %}<h6 class="card-title">{{ user.username }}</h6>{% endif %}
+                {% if user.phone_number %}<p class="card-text">Телефон: {{ user.phone_code }} {{ user.phone_number }}</p>{% endif %}
+                {% if user.country %}<p class="card-text">Страна: {{ user.country }}</p>{% endif %}
+                <br>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {{ field.label_tag }}
+                        {{ field }}
+                    {% endfor %}
+            </div>
+            <div class="card-footer bg-primary-subtle text-primary-emphasis text-end">
+                <a href="{% url 'users:user_list' %}" class="btn btn-sm">Назад >></a>
+                <button type="submit" class="btn btn-primary btn-sm">Cохранить</button>
+            </div>
+                </form>
+        </div>
+    </div>
+    {% endblock %}
